@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Autoencoder for FashionMNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="index.html" class="button">Back to Portfolio</a>
+            <h1>Autoencoder for FashionMNIST</h1>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div id="main">
+        <section id="one">
+            <p>In this project, I implemented an Autoencoder to compress and reconstruct images from the FashionMNIST dataset, which contains grayscale images of clothing items. Autoencoders are unsupervised learning models that learn compact representations of data, making them valuable for tasks like image denoising and compression. This project showcases my ability to build and train neural networks for image reconstruction using PyTorch.</p>
+        </section>
+
+        <section id="two">
+            <p>The Autoencoder architecture comprises two main components:</p>
+            <ul>
+                <li><strong>Encoder</strong>: The encoder compresses the input image into a lower-dimensional latent space. Its architecture includes:
+                    <ul>
+                        <li>A linear layer mapping the 784-dimensional input (flattened 28x28 image) to a 512-dimensional hidden layer.</li>
+                        <li>A ReLU activation for non-linearity.</li>
+                        <li>A second linear layer reducing the hidden layer to a 64-dimensional latent space, capturing the essential features of the input.</li>
+                        <li>A ReLU activation to maintain non-linearity.</li>
+                    </ul>
+                </li>
+                <li><strong>Decoder</strong>: The decoder reconstructs the image from the latent space. Its architecture mirrors the encoder:
+                    <ul>
+                        <li>A linear layer expanding the 64-dimensional latent space to a 512-dimensional hidden layer.</li>
+                        <li>A ReLU activation for non-linearity.</li>
+                        <li>A final linear layer mapping to the 784-dimensional output.</li>
+                        <li>A Sigmoid activation to ensure pixel values are between 0 and 1, matching the input image range.</li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="architecture-image">
+                <img src="images/fulls/autoencoder_architecture.png" alt="Autoencoder Architecture" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Figure 1: Architecture of the Autoencoder (Encoder and Decoder)</p>
+            </div>
+            <p><strong>What Makes Autoencoders Special</strong>:</p>
+            <ul>
+                <li><strong>Dimensionality Reduction</strong>: Autoencoders learn a compressed representation of the input data, enabling efficient storage and reconstruction. The 64-dimensional latent space in this model captures key features of FashionMNIST images.</li>
+                <li><strong>Unsupervised Learning</strong>: Autoencoders do not require labeled data, making them versatile for tasks where labels are unavailable.</li>
+                <li><strong>Reconstruction Focus</strong>: The model is trained to minimize the Mean Squared Error (MSE) between the input and reconstructed images, ensuring high-fidelity reconstructions.</li>
+            </ul>
+            <p>The Autoencoder was trained on the FashionMNIST dataset for 15 epochs with a batch size of 64, using the Adam optimizer (learning rate 1e-5). The training loop computes the MSE loss for each batch, and the validation loop evaluates reconstruction quality on the test set. For each epoch, the last validation batch is visualized, showing eight input images alongside their reconstructions in a grid saved as output_epoch.png. This project highlights my skills in designing symmetric neural architectures, optimizing reconstruction tasks, and visualizing results effectively.</p>
+        </section>
+
+        <!-- Implementation Notebook Section -->
+        <section>
+            <h3>Implementation Notebook</h3>
+            <p>
+                <i class="icon brands fa-github"></i>
+                Click below to open the Autoencoder training notebook on Google Colab.
+            </p>
+            <a 
+                href="https://colab.research.google.com/gist/sgshrigouri/c2fcca856ecee8ec3c008465f66a9ca2/autoencoders.ipynb" 
+                target="_blank" 
+                class="button"
+                title="View and run the Autoencoder notebook on Google Colab"
+            >
+                <i class="icon brands fa-github"></i> Open Autoencoder Notebook
+            </a>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="icons">
+                <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- XLSX Parser Script -->
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+    </script>
+</body>
+</html>

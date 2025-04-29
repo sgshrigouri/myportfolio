@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>VAE for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="index.html" class="button">Back to Portfolio</a>
+            <h1>Variational Autoencoder (VAE) for MNIST</h1>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div id="main">
+        <section id="one">
+            <p>This project involves a Variational Autoencoder (VAE) implemented to generate and reconstruct handwritten digits from the MNIST dataset. VAEs extend traditional autoencoders by introducing a probabilistic latent space, enabling both reconstruction and generative capabilities. This work demonstrates my proficiency in probabilistic modeling, generative deep learning, and PyTorch implementation.</p>
+        </section>
+
+        <section id="two">
+            <p>The VAE architecture consists of three key components:</p>
+            <ul>
+                <li><strong>Encoder</strong>: The encoder maps the input image to a probabilistic latent space, producing mean and log-variance vectors. Its architecture includes:
+                    <ul>
+                        <li>A linear layer reducing the 784-dimensional input (flattened 28x28 image) to a 400-dimensional hidden layer.</li>
+                        <li>A LeakyReLU activation (slope 0.2) for non-linearity.</li>
+                        <li>A second linear layer projecting to a 2-dimensional intermediate layer.</li>
+                        <li>A LeakyReLU activation.</li>
+                        <li>Two parallel linear layers producing the 2-dimensional mean and log-variance vectors, defining the latent space distribution.</li>
+                    </ul>
+                </li>
+                <li><strong>Reparameterization</strong>: To enable backpropagation through the stochastic latent space, the VAE uses a reparameterization trick:
+                    <ul>
+                        <li>Samples are drawn from a normal distribution using the mean and standard deviation (computed from log-variance).</li>
+                        <li>A random noise term (epsilon) is scaled and shifted to produce latent variables.</li>
+                    </ul>
+                </li>
+                <li><strong>Decoder</strong>: The decoder reconstructs the image from the sampled latent variables. Its architecture includes:
+                    <ul>
+                        <li>A linear layer mapping the 2-dimensional latent space to a 2-dimensional intermediate layer.</li>
+                        <li>A LeakyReLU activation (slope 0.2).</li>
+                        <li>A second linear layer expanding to a 400-dimensional hidden layer.</li>
+                        <li>A LeakyReLU activation.</li>
+                        <li>A final linear layer producing the 784-dimensional output.</li>
+                        <li>A Sigmoid activation to ensure pixel values are between 0 and 1.</li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="architecture-image">
+                <img src="images/fulls/vae_architecture.png" alt="VAE Architecture" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Figure 1: Architecture of the Variational Autoencoder (Encoder, Reparameterization, Decoder)</p>
+            </div>
+            <p><strong>What Makes VAEs Special</strong>:</p>
+            <ul>
+                <li><strong>Probabilistic Latent Space</strong>: Unlike standard autoencoders, VAEs model the latent space as a probability distribution, allowing for smooth interpolation and generation of new samples by sampling from the latent space.</li>
+                <li><strong>Dual Objective</strong>: VAEs optimize a combined loss function:
+                    <ul>
+                        <li><strong>Reconstruction Loss</strong>: Binary cross-entropy ensures the reconstructed image matches the input.</li>
+                        <li><strong>KL-Divergence</strong>: This regularizes the latent space to approximate a standard normal distribution, enhancing generative quality.</li>
+                    </ul>
+                </li>
+                <li><strong>Generative Capabilities</strong>: VAEs can generate new images by sampling from the latent space, making them suitable for tasks like image synthesis and data augmentation.</li>
+            </ul>
+            <p>The VAE was trained on the MNIST dataset with a batch size of 100, using the Adam optimizer (learning rate 1e-3). The training loop minimizes the combined reconstruction and KL-divergence loss. Sample images from the training set are visualized in a 5x5 grid to provide context for the dataset. This project showcases my ability to implement complex probabilistic models, handle stochastic training processes, and leverage PyTorch for generative tasks.</p>
+        </section>
+
+        <!-- Implementation Notebook Section -->
+        <section>
+            <h3>Implementation Notebook</h3>
+            <p>
+                <i class="icon brands fa-github"></i>
+                Click below to open the VAE training notebook on Google Colab.
+            </p>
+            <a 
+                href="https://colab.research.google.com/gist/sgshrigouri/cd9b8230e785c30ddcc968ce5d540715/variationalautoencoders.ipynb" 
+                target="_blank" 
+                class="button"
+                title="View and run the VAE notebook on Google Colab"
+            >
+                <i class="icon brands fa-github"></i> Open VAE Notebook
+            </a>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="icons">
+                <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- XLSX Parser Script -->
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+    </script>
+</body>
+</html>

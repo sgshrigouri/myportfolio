@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>GAN for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>Generative Adversarial Network (GAN) for MNIST</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <p>This project features a Generative Adversarial Network (GAN) designed to generate realistic handwritten digits resembling the MNIST dataset. GANs are a cornerstone of generative modeling, pitting two neural networks—a Generator and a Discriminator—against each other in a game-theoretic framework. This implementation highlights my ability to design, train, and evaluate adversarial networks using PyTorch, showcasing their power in creating synthetic data.</p>
+    </section>
+
+    <section id="two">
+        <p>The GAN architecture consists of two primary components:</p>
+        <ul>
+            <li>Generator Network:
+                <ul>
+                    <li>A linear layer mapping the input noise to a 128-dimensional hidden layer.</li>
+                    <li>A LeakyReLU activation (slope 0.01) to introduce non-linearity.</li>
+                    <li>A second linear layer projecting the hidden layer to 784 dimensions.</li>
+                    <li>A Sigmoid activation to normalize outputs between 0 and 1, matching the MNIST image range.</li>
+                    <li>The output is reshaped into a 1x28x28 tensor to represent a grayscale image.</li>
+                </ul>
+                <div class="architecture-image">
+                    <img src="images/fulls/generator_architecture.png" alt="Generator Architecture" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Figure 1: Architecture of the Generator Network</p>
+                </div>
+            </li>
+            <li>Discriminator Network:
+                <ul>
+                    <li>A linear layer reducing the input to a 128-dimensional hidden layer.</li>
+                    <li>A LeakyReLU activation (slope 0.01) for non-linearity.</li>
+                    <li>A final linear layer producing a single logit, used with binary cross-entropy loss to classify images as real or fake.</li>
+                </ul>
+                <div class="architecture-image">
+                    <img src="images/fulls/discriminator_architecture.png" alt="Discriminator Architecture" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Figure 2: Architecture of the Discriminator Network</p>
+                </div>
+            </li>
+        </ul>
+        <p>What Makes GANs Special:</p>
+        <ul>
+            <li>Adversarial Training: The Generator and Discriminator are trained simultaneously in a minimax game, where the Generator aims to "fool" the Discriminator, and the Discriminator strives to correctly classify real vs. fake images. This dynamic leads to high-quality image generation.</li>
+            <li>Creative Output: GANs can produce entirely new images not present in the training data, making them ideal for creative applications like art generation or data augmentation.</li>
+            <li>Challenges and Insights: Training GANs requires careful balancing of the two networks to avoid issues like mode collapse or vanishing gradients. My implementation uses Adam optimizers (learning rates of 1e-4 for both networks) and a batch size of 64 over 100 epochs to ensure stable training.</li>
+        </ul>
+        <p>The model was trained on the MNIST dataset, with real images labeled as 1 and fake images as 0. The training loop alternates between updating the Discriminator (using real and fake image losses) and the Generator (aiming to maximize the Discriminator’s error on fake images). Generated images are saved as 8-column grids for each epoch, visualizing the improvement in image quality over time. This project demonstrates my expertise in adversarial learning, PyTorch implementation, and handling complex training dynamics.</p>
+    </section>
+
+    <!-- Implementation Notebook Section -->
+    <section>
+        <h3>Implementation Notebook</h3>
+        <p>
+          <i class="icon brands fa-github"></i>
+          Click below to open the GAN training notebook on Google Colab.
+        </p>
+        <a 
+          href="https://colab.research.google.com/gist/sgshrigouri/015e4660b2eea9eb1d5b8f943a10fc11/generativeadversarialnetworks.ipynb"
+          target="_blank" 
+          class="button"
+          title="View and run the GAN notebook on Google Colab"
+        >
+          <i class="icon brands fa-github"></i> Open GAN Notebook
+        </a>
+    </section>
+
+    <!-- Generated Images Section -->
+    <section>
+        <h3>Generated Images</h3>
+        <p>The following images show the progression of generated handwritten digits at different epochs during training, saved as 8-column grids.</p>
+        <div class="generated-image-grid">
+            <div class="generated-image">
+                <img src="images/fulls/generated_000.jpg" alt="Generated Images at Epoch 0" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 0</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_010.jpg" alt="Generated Images at Epoch 10" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 10</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_020.jpg" alt="Generated Images at Epoch 20" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 20</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_030.jpg" alt="Generated Images at Epoch 30" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 30</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_040.jpg" alt="Generated Images at Epoch 40" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 40</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_050.jpg" alt="Generated Images at Epoch 50" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 50</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_060.jpg" alt="Generated Images at Epoch 60" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 60</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_070.jpg" alt="Generated Images at Epoch 70" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 70</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_080.jpg" alt="Generated Images at Epoch 80" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 80</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_090.jpg" alt="Generated Images at Epoch 90" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 90</p>
+            </div>
+            <div class="generated-image">
+                <img src="images/fulls/generated_099.jpg" alt="Generated Images at Epoch 80" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Epoch 99</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <ul class="icons">
+            <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+
+<!-- Your Custom XLSX Parser Script (unchanged) -->
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>
