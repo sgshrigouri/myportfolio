@@ -1,0 +1,192 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE HTML>
+<html>
+<head>
+    <title>Conditional GAN for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>Conditional Generative Adversarial Network (Conditional GAN) for MNIST</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <p>This project features a Conditional Generative Adversarial Network (Conditional GAN) designed to generate handwritten digits from the MNIST dataset, conditioned on specific class labels (0–9). Unlike standard GANs, Conditional GANs incorporate label information to control the generation process, enabling targeted synthesis of digits. This implementation highlights my expertise in designing and training adversarial networks with conditional inputs, leveraging PyTorch to create high-quality, class-specific synthetic images.</p>
+    </section>
+
+    <section id="two">
+        <p>The Conditional GAN architecture consists of two primary components, augmented with a conditioning module to incorporate class labels:</p>
+        <ul>
+            <li><strong>Conditioning Module</strong>: A shared module used by both the Generator and Discriminator to convert class labels into feature vectors:
+                <ul>
+                    <li><strong>Input</strong>: One-hot encoded labels (10 classes for MNIST digits 0–9).</li>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>A linear layer mapping the 10-dimensional one-hot vector to a 784-dimensional feature vector.</li>
+                            <li>Batch normalization to stabilize training.</li>
+                            <li>A LeakyReLU activation (slope 0.01) for non-linearity.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: For the Generator, the feature vector is added to the linear layer output; for the Discriminator, it is reshaped into a 16x7x7 feature map and added to the convolutional output.</li>
+                </ul>
+            </li>
+            <li><strong>Generator Network</strong>: Generates images from random noise and class labels.
+                <ul>
+                    <li><strong>Input</strong>: A 100-dimensional random noise vector (sample size) and a class label.</li>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>A linear layer mapping the 100-dimensional noise to a 784-dimensional vector, followed by batch normalization and LeakyReLU (slope 0.01).</li>
+                            <li>Addition of the 784-dimensional feature vector from the conditioning module.</li>
+                            <li>Reshaping to a 16x7x7 feature map.</li>
+                            <li>A transposed convolutional layer (16x7x7 to 32x14x14, kernel size 5, stride 2, padding 2, output padding 1), followed by batch normalization and LeakyReLU.</li>
+                            <li>A final transposed convolutional layer (32x14x14 to 1x28x28, kernel size 5, stride 2, padding 2, output padding 1), followed by a Sigmoid activation to produce pixel values between 0 and 1.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: A 1x28x28 grayscale image representing a digit corresponding to the input label.</li>
+                </ul>
+            </li>
+            <li><strong>Discriminator Network</strong>: Classifies images as real or fake, incorporating label information.
+                <ul>
+                    <li><strong>Input</strong>: A 1x28x28 image (real from MNIST or fake from the Generator) and a class label.</li>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>A convolutional layer (1x28x28 to 32x14x14, kernel size 5, stride 2, padding 2), followed by LeakyReLU (slope 0.01).</li>
+                            <li>A second convolutional layer (32x14x14 to 16x7x7, kernel size 5, stride 2, padding 2), followed by batch normalization and LeakyReLU.</li>
+                            <li>Addition of the 16x7x7 feature map from the conditioning module (reshaped from the 784-dimensional feature vector).</li>
+                            <li>Flattening to 784 dimensions, followed by a linear layer (784 to 784), batch normalization, and LeakyReLU.</li>
+                            <li>A final linear layer (784 to 1) producing a logit for binary classification (real or fake).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Loss</strong>: Binary cross-entropy with logits, computed for both real and fake images.</li>
+                </ul>
+            </li>
+        </ul>
+        <div class="architecture-image">
+            <img src="images/fulls/c_gan.png" alt="Conditional GAN Architecture" style="max-width: 100%; height: auto;">
+            <p class="image-caption">Figure 1: Architecture of the Conditional GAN (Conditioning Module, Generator, Discriminator)</p>
+        </div>
+        <p><strong>What Makes Conditional GANs Special</strong>:</p>
+        <ul>
+            <li><strong>Conditional Generation</strong>: By incorporating class labels, the Generator can produce images of specific digits, offering greater control compared to standard GANs.</li>
+            <li><strong>Adversarial Training</strong>: The Generator and Discriminator are trained in a minimax game, where the Generator aims to produce images that the Discriminator classifies as real, conditioned on the correct label, while the Discriminator learns to distinguish real MNIST images from fake ones.</li>
+            <li><strong>Convolutional Architecture</strong>: Unlike the standard GAN’s fully connected layers, the Conditional GAN uses transposed convolutional layers in the Generator and convolutional layers in the Discriminator, improving spatial feature learning for higher-quality images.</li>
+            <li><strong>Training Stability</strong>: Batch normalization and carefully tuned learning rates (1e-4 for both networks) mitigate issues like mode collapse, ensuring stable training over 65 epochs.</li>
+        </ul>
+        <p>The model was trained on the MNIST dataset with a batch size of 64, using Adam optimizers for both the Generator and Discriminator (learning rate 1e-4). The training loop alternates between updating the Discriminator with losses from real MNIST images (labeled as 1) and fake images from the Generator (labeled as 0), both conditioned on class labels, and updating the Generator to maximize the Discriminator’s error on fake images, conditioned on class labels, aiming to produce realistic digits. Generated images are saved as 10-column grids for each epoch, with labels cycling through 0–9 to visualize the progression of digit quality. This project demonstrates my proficiency in conditional generative modeling, convolutional neural network design, and PyTorch implementation for controlled image synthesis.</p>
+    </section>
+
+    <!-- Implementation Notebook Section -->
+    <section>
+        <h3>Implementation Notebook</h3>
+        <p>
+            <i class="icon brands fa-github"></i>
+            Click below to open the Conditional GAN training notebook on Google Colab.
+        </p>
+        <a 
+            href="https://colab.research.google.com/gist/sgshrigouri/44cc7ebbe906b752129b5404c57e4053/conditionalgan.ipynb" 
+            target="_blank" 
+            class="button"
+            title="View and run the Conditional GAN notebook on Google Colab"
+        >
+            <i class="icon brands fa-github"></i> Open Conditional GAN Notebook
+        </a>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <ul class="icons">
+            <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+
+<!-- XLSX Parser Script -->
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>
