@@ -1,8 +1,4 @@
-/*
-	Strata by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
+
 
 (function($) {
 
@@ -12,13 +8,11 @@
 		$footer = $('#footer'),
 		$main = $('#main'),
 		settings = {
-
 			// Parallax background effect?
 				parallax: true,
 
 			// Parallax factor (lower = more intense, higher = less intense).
 				parallaxFactor: 20
-
 		};
 
 	// Breakpoints.
@@ -39,7 +33,6 @@
 
 	// Touch?
 		if (browser.mobile) {
-
 			// Turn on touch mode.
 				$body.addClass('is-touch');
 
@@ -47,7 +40,6 @@
 				window.setTimeout(function() {
 					$window.scrollTop($window.scrollTop() + 1);
 				}, 0);
-
 		}
 
 	// Footer.
@@ -60,44 +52,32 @@
 		});
 
 	// Header.
-
 		// Parallax background.
-
 			// Disable parallax on IE (smooth scrolling is jerky), and on mobile platforms (= better performance).
-				if (browser.name == 'ie'
-				||	browser.mobile)
+				if (browser.name == 'ie' || browser.mobile)
 					settings.parallax = false;
 
 			if (settings.parallax) {
-
 				breakpoints.on('<=medium', function() {
-
 					$window.off('scroll.strata_parallax');
 					$header.css('background-position', '');
-
 				});
 
 				breakpoints.on('>medium', function() {
-
 					$header.css('background-position', 'left 0px');
-
 					$window.on('scroll.strata_parallax', function() {
 						$header.css('background-position', 'left ' + (-1 * (parseInt($window.scrollTop()) / settings.parallaxFactor)) + 'px');
 					});
-
 				});
 
 				$window.on('load', function() {
 					$window.triggerHandler('scroll');
 				});
-
 			}
 
 	// Main Sections: Two.
-
 		// Lightbox gallery.
 			$window.on('load', function() {
-
 				$('#two').poptrox({
 					caption: function($a) { return $a.next('h3').text(); },
 					overlayColor: '#2c2c2c',
@@ -109,9 +89,13 @@
 					usePopupDefaultStyling: false,
 					usePopupEasyClose: false,
 					usePopupNav: true,
-					windowMargin: (breakpoints.active('<=small') ? 0 : 50)
+					windowMargin: (breakpoints.active('<=small') ? 0 : 50),
+					onPopupOpen: function() {
+						$('.poptrox-popup').append(
+							'<a href="' + this.element.attr('href') + '" class="button" style="position: absolute; bottom: 10px; right: 10px;">Go to Project</a>'
+						);
+					}
 				});
-
 			});
 
 })(jQuery);
