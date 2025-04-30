@@ -3217,5 +3217,14 @@ input, select, textarea {
 				margin-left: 0;
 				padding-left: 0;
 			}
+			.button.go-to-project {
+				display: inline-block;
+				margin-top: 1em;
+				padding: 0.5em 1em;
+				background-color: #49bf9d;
+				color: #fff !important;
+				text-decoration: none;
+				border-radius: 0.35em;
+			}
 
 	}
