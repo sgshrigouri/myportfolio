@@ -7,6 +7,50 @@
     <link rel="stylesheet" href="assets/css/main.css" />
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <style>
+        #footer {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            background: none !important;
+            border: none !important;
+            padding: 1em 0 !important;
+            margin: 0 !important;
+        }
+        #footer .inner {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        #footer .icons,
+        #footer .copyright {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #footer .icons li,
+        #footer .copyright li {
+            display: inline-block;
+            margin: 0 0.5em 0 0 !important;
+            padding: 0 !important;
+        }
+        #footer .icons a,
+        #footer .copyright a {
+            text-decoration: none;
+            color: inherit;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        #footer .icons a:hover,
+        #footer .copyright a:hover {
+            text-decoration: underline;
+        }
+        #footer .icons .label {
+            display: none;
+        }
+    </style>
 </head>
 <body class="is-preload">
 
@@ -37,24 +81,36 @@
             <h2>Projects</h2>
             <div class="row">
                 <article class="col-6 col-12-xsmall work-item">
-                    <a href="gan-for-mnist.html" class="image fit thumb"><img src="images/thumbs/gan.png" alt="GAN project" /></a>
+                    <a href="images/fulls/gan.png" class="image fit thumb"><img src="images/thumbs/gan.png" alt="GAN project" /></a>
                     <h3>GAN on MNIST</h3>
                     <p>Synthetic image generation using GANs trained on handwritten digits.</p>
+                    <ul class="actions">
+                        <li><a href="gan-for-mnist.html" class="button">View Project</a></li>
+                    </ul>
                 </article>
                 <article class="col-6 col-12-xsmall work-item">
-                    <a href="autoencoder-for-fashionmnist.html" class="image fit thumb"><img src="images/thumbs/autoencoder.png" alt="Autoencoder project" /></a>
+                    <a href="images/fulls/autoencoder.png" class="image fit thumb"><img src="images/thumbs/autoencoder.png" alt="Autoencoder project" /></a>
                     <h3>Autoencoder on FashionMNIST</h3>
                     <p>Image compression and reconstruction using autoencoder architecture.</p>
+                    <ul class="actions">
+                        <li><a href="autoencoder-for-fashionmnist.html" class="button">View Project</a></li>
+                    </ul>
                 </article>
                 <article class="col-6 col-12-xsmall work-item">
-                    <a href="vae-for-mnist.html" class="image fit thumb"><img src="images/thumbs/vae.jpg" alt="VAE project" /></a>
+                    <a href="images/fulls/vae.jpg" class="image fit thumb"><img src="images/thumbs/vae.jpg" alt="VAE project" /></a>
                     <h3>VAE on MNIST</h3>
                     <p>Probabilistic image generation with Variational Autoencoders.</p>
+                    <ul class="actions">
+                        <li><a href="vae-for-mnist.html" class="button">View Project</a></li>
+                    </ul>
                 </article>
                 <article class="col-6 col-12-xsmall work-item">
-                    <a href="conditional-gan-for-mnist.html" class="image fit thumb"><img src="images/thumbs/conditional-gan.jpg" alt="Conditional GAN project" /></a>
+                    <a href="images/fulls/Conditional-GAN-CGAN-architecture.png" class="image fit thumb"><img src="images/thumbs/Conditional-GAN-CGAN-architecture.png" alt="Conditional GAN project" /></a>
                     <h3>Conditional GAN on MNIST</h3>
                     <p>Synthetic image generation using conditional GAN trained on handwritten digits.</p>
+                    <ul class="actions">
+                        <li><a href="conditional-gan-for-mnist.html" class="button">View Project</a></li>
+                    </ul>
                 </article>
             </div>
         </section>
