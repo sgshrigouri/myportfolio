@@ -1,0 +1,345 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>ControlNet with Stable Diffusion - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for Icons (Updated to 6.6.0 for consistency with portfolio) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <style>
+        .generated-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .generated-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .image-caption {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .architecture-image {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .architecture-image img {
+            width: 150%;
+            max-width: 1600px;
+            height: auto;
+            margin-left: -5%;
+            display: block;
+        }
+        section h4 {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        section ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        section ul li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>ControlNet with Stable Diffusion for Fashion Image Generation</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <h2>Project Overview</h2>
+        <p>
+            This project focuses on generating photorealistic fashion images using Stable Diffusion integrated with ControlNet, a powerful framework for conditional image generation. The objective is to synthesize isolated clothing items based on textual descriptions and structural sketches, leveraging the DeepFashion2 dataset, which contains 9993 triplets of images, text annotations, and Canny edge sketches. The dataset provides a rich source of fashion items, including various clothing types (e.g., jackets, t-shirts, dresses), materials, colors, and seasonal suitability, making it ideal for training a model to generate detailed and contextually accurate fashion designs.
+        </p>
+        <p>
+            Stable Diffusion, a latent diffusion model, serves as the backbone for image generation, iteratively denoising a latent representation to produce high-quality images guided by text prompts encoded via a CLIP text encoder. ControlNet enhances this process by incorporating structural guidance through Canny edge sketches, ensuring that the generated clothing items align with the provided sketch’s shape and form. To tailor the model to the specific aesthetics of fashion design, Textual Inversion is employed as a fine-tuning method, learning a new token (<code>&lt;my-fashion-style&gt;</code>) that encapsulates the unique style of the DeepFashion2 dataset, such as vibrant colors, detailed textures, and studio lighting effects.
+        </p>
+        <p>
+            The project was executed on a Kaggle environment with GPU support, utilizing PyTorch and the Diffusers library. The training process involved preparing triplets of images, text prompts, and sketches, followed by fine-tuning via Textual Inversion over 100 epochs. The final generation phase used prompts like "light color, white color, suitable for summer" and "blue color dress, suitable for winter," combined with sketches to produce photorealistic clothing images without human figures, ensuring focus on the clothing item itself.
+        </p>
+    </section>
+
+    <section id="two">
+        <h2>Architecture and Workflow</h2>
+        <p>
+            The architecture of this project integrates Stable Diffusion with ControlNet to achieve precise control over both the style and structure of generated fashion images. Stable Diffusion operates in a latent space, using an autoencoder to compress images into a lower-dimensional representation, a U-Net to perform iterative denoising, and a CLIP text encoder to convert text prompts into embeddings that guide the denoising process. This allows the model to generate images that align with textual descriptions, such as "a white dress suitable for summer with vibrant colors."
+        </p>
+        <p>
+            ControlNet extends Stable Diffusion by adding a conditional control mechanism. It duplicates the encoder of the pre-trained Stable Diffusion model and trains it to incorporate additional input signals, such as Canny edge maps derived from sketches. During inference, ControlNet combines the text prompt embeddings with the control image (e.g., a Canny edge sketch of a dress), ensuring that the generated image respects both the textual description and the structural outline provided by the sketch. This dual guidance is particularly valuable in fashion design, where the shape of a garment (e.g., the silhouette of a jacket) is as important as its stylistic attributes (e.g., color, material).
+        </p>
+        <p>
+            Fine-tuning is achieved through Textual Inversion, which learns a new embedding for the token <code>&lt;my-fashion-style&gt;</code> using a small subset of the DeepFashion2 dataset. This embedding captures the unique characteristics of the dataset, such as the photorealistic quality, vibrant colors, and studio lighting typical of fashion photography. During generation, the token is incorporated into prompts (e.g., "An isolated &lt;my-fashion-style&gt; dress, light color, suitable for summer"), enabling the model to generate images that reflect the learned style while adhering to the user’s description and sketch.
+        </p>
+        <div class="architecture-image">
+            <img src="images/fulls/Style_Sketch.png" alt="ControlNet with Stable Diffusion Architecture">
+            <p class="image-caption">Figure 1: Architecture of ControlNet with Stable Diffusion, illustrating the integration of text prompts and sketch-based control for fashion image generation.</p>
+        </div>
+    </section>
+
+    <section id="three">
+        <h2>Experimental Setup and Results</h2>
+        <h4>Dataset Preparation</h4>
+        <p>
+            The DeepFashion2 dataset was used, comprising 9993 triplets of images, text annotations, and Canny edge sketches. Each triplet consists of:
+        </p>
+        <ul>
+            <li><strong>Image</strong>: A high-resolution photograph of an isolated clothing item (e.g., a jacket, dress) under studio lighting conditions.</li>
+            <li><strong>Text Annotation</strong>: A description of the clothing item, including attributes like type (e.g., "t-shirt"), color (e.g., "blue color"), material (e.g., "made of cotton"), and suitability (e.g., "suitable for summer").</li>
+            <li><strong>Canny Edge Sketch</strong>: A preprocessed sketch generated using Canny edge detection, capturing the structural outline of the clothing item, which is used as input for ControlNet.</li>
+        </ul>
+        <p>
+            For training, a subset of 5 triplets was used to fine-tune the model via Textual Inversion, ensuring computational efficiency while capturing the dataset’s style. The images and sketches were resized to 512x512 pixels to match the model’s input requirements, and text prompts were parsed to extract structured attributes (e.g., "blue color jacket, suitable for winter").
+        </p>
+
+        <h4>Training Process</h4>
+        <p>
+            The training process involved two main phases: fine-tuning with Textual Inversion and image generation with ControlNet. In the fine-tuning phase, Textual Inversion was applied to learn the <code>&lt;my-fashion-style&gt;</code> token over 100 epochs. The process optimized a new embedding vector in the CLIP text encoder’s space, using the triplets to align the generated images with the input images. The loss function was based on mean squared error between the predicted noise and the actual noise added during the diffusion process, ensuring that the learned embedding accurately represented the fashion style of the DeepFashion2 dataset.
+        </p>
+        <p>
+            During the generation phase, the fine-tuned model was used to synthesize images based on user-provided text prompts and sketches. The script supports both text-only generation (without ControlNet) and sketch-guided generation (with ControlNet). For the experimental results, ControlNet was enabled, using Canny edge sketches to guide the structure of the generated clothing items. Prompts like "light color, white color, suitable for summer" and "blue color dress, suitable for winter" were used to generate a variety of clothing items, ensuring diversity in style and seasonal suitability.
+        </p>
+
+        <h4>Generated Fashion Images</h4>
+        <p>
+            Below are 10 generated images showcasing the model’s ability to synthesize fashion items. These images were produced using prompts such as "light color, white color, suitable for summer" and "blue color dress, suitable for winter," with Canny edge sketches providing structural guidance. The images are photorealistic, with vibrant colors, high contrast, and detailed textures, reflecting the quality of professional fashion photography. They are saved in <code>/kaggle/working/</code> during generation and moved to <code>images/generated_fashion/</code> for display on this page.
+        </p>
+        <div class="generated-images">
+            <div>
+                <img src="images/fulls/a.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/A.png" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w1.png" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/W1.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/W2.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/shorts2.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/W3.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w3.png" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w4.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w_4.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w6.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/w_6.png" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/m1.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/me1.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/m2.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/me2.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/jacket3.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/3.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/m4.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+            <div>
+                <img src="images/fulls/shorts.jpg" alt="" class="">
+                <p class="image-caption"></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="four">
+        <h2>Technical Explanations</h2>
+        <h4>Why This Approach?</h4>
+        <p>
+            The combination of Stable Diffusion, ControlNet, and Textual Inversion was chosen to address the unique challenges of fashion image generation, where both stylistic attributes (e.g., color, material) and structural accuracy (e.g., garment shape) are critical. Fine-tuning a pre-trained model like Stable Diffusion adapts it to the specific task of generating fashion images, improving performance for this niche application. By using the DeepFashion2 dataset, the model learns to capture the aesthetics of professional fashion photography, such as vibrant colors, high contrast, and detailed textures, which are often missing in generic pre-trained models.
+        </p>
+        <ul>
+            <li><strong>Customization</strong>: Fine-tuning tailors the model to generate images aligned with the specific aesthetics of the DeepFashion2 dataset, such as studio lighting and photorealistic textures. This ensures that the generated clothing items are relevant to the fashion domain.</li>
+            <li><strong>Improved Quality</strong>: By fine-tuning on a targeted dataset, the model produces more detailed and contextually accurate outputs, reducing the likelihood of generic or irrelevant results (e.g., generating a cartoonish dress when a photorealistic one is desired).</li>
+            <li><strong>Efficiency</strong>: Fine-tuning a pre-trained model requires significantly less data and computational resources compared to training a model from scratch, making it feasible to achieve high-quality results with a dataset of 9993 triplets.</li>
+            <li><strong>Structural Control</strong>: ControlNet’s ability to incorporate sketches ensures that the generated images adhere to the structural design of the clothing item, which is essential in fashion design where the silhouette and form are as important as the style.</li>
+        </ul>
+
+        <h4>Stable Diffusion with ControlNet vs. GANs</h4>
+        <p>
+            Stable Diffusion is a latent diffusion model that generates images by iteratively denoising a random noise vector in a compressed latent space, guided by a text prompt encoded via a CLIP text encoder. ControlNet extends this by adding conditional control, allowing the model to incorporate structural inputs like Canny edge sketches. This approach offers several advantages over Generative Adversarial Networks (GANs), which were previously used for image generation tasks like the Cycle GAN project in this portfolio:
+        </p>
+        <ul>
+            <li><strong>Text and Control Guidance</strong>: Stable Diffusion leverages text prompts for flexible, human-readable input, allowing users to specify detailed attributes (e.g., "a blue dress suitable for winter"). ControlNet adds precise structural control via sketches, ensuring the generated image matches the desired shape, which is critical in fashion design.</li>
+            <li><strong>Stability and Training</strong>: Diffusion models are inherently more stable to train than GANs, which often suffer from mode collapse (where the model generates limited varieties of outputs) or training instability due to the adversarial nature of the generator and discriminator.</li>
+            <li><strong>Diversity of Outputs</strong>: Diffusion models produce more diverse outputs compared to GANs, which can sometimes generate repetitive patterns. This diversity is evident in the generated images below, which include a variety of clothing types, colors, and seasonal styles.</li>
+            <li><strong>Pre-trained Knowledge</strong>: Stable Diffusion benefits from large-scale pre-training on datasets like LAION-5B, providing a robust foundation that can be fine-tuned for specific tasks. GANs typically require training from scratch or extensive modification to achieve similar generalization.</li>
+            <li><strong>ControlNet Flexibility</strong>: ControlNet’s ability to incorporate various control signals (e.g., sketches, depth maps) enables fine-grained control over the generation process, a capability that GANs struggle to achieve without significant architectural changes.</li>
+        </ul>
+        <p>
+            However, Stable Diffusion with ControlNet is more computationally intensive than GANs, requiring a GPU with sufficient memory (e.g., 16GB VRAM) and longer inference times due to the iterative denoising process (e.g., 40 steps per image). Despite this, the benefits in terms of quality, control, and flexibility make it a superior choice for this fashion generation use case.
+        </p>
+
+        <h4>What is Stable Diffusion?</h4>
+        <p>
+            Stable Diffusion is a latent diffusion model developed by RunwayML, designed for efficient and high-quality image generation. Unlike traditional diffusion models that operate in pixel space, Stable Diffusion works in a compressed latent space, reducing computational requirements while maintaining quality. The model consists of three key components:
+        </p>
+        <ul>
+            <li><strong>Autoencoder</strong>: Compresses input images into a lower-dimensional latent representation using a variational autoencoder (VAE). During generation, the decoder reconstructs the latent representation back into a pixel-space image.</li>
+            <li><strong>U-Net</strong>: A neural network that performs iterative denoising in the latent space. Starting with a random noise vector, the U-Net removes noise over multiple steps (e.g., 40 steps in this project), guided by text embeddings, to produce a coherent image.</li>
+            <li><strong>CLIP Text Encoder</strong>: Converts text prompts into embeddings that guide the U-Net’s denoising process. The CLIP model, pre-trained on a large dataset of image-text pairs, ensures that the generated image aligns with the textual description.</li>
+        </ul>
+        <p>
+            In this project, Stable Diffusion is initialized with the pre-trained "runwayml/stable-diffusion-v1-5" model, using torch.float16 precision to optimize memory usage on the GPU. The UniPCMultistepScheduler is used to manage the denoising steps, balancing quality and speed.
+        </p>
+
+        <h4>What is ControlNet?</h4>
+        <p>
+            ControlNet is an extension of Stable Diffusion that enables conditional control over the image generation process. Developed by Lvmin Zhang and colleagues, ControlNet integrates additional input signals—such as Canny edge maps, depth maps, or sketches—into the diffusion process, allowing users to guide the structure of the generated image while still leveraging text prompts for stylistic guidance.
+        </p>
+        <p>
+            ControlNet works by duplicating the encoder of the pre-trained Stable Diffusion model and training it to incorporate control signals. The control signal (e.g., a Canny edge sketch) is processed through a separate convolutional network, and its features are injected into the U-Net at multiple layers during the denoising process. This ensures that the generated image respects both the structural input (e.g., the outline of a dress) and the text prompt (e.g., "a blue dress suitable for winter").
+        </p>
+        <p>
+            In this project, ControlNet uses Canny edge sketches derived from the DeepFashion2 dataset to guide the generation of clothing items. The sketches are preprocessed to remove potential human-like features (e.g., masking the upper 50% of the image) and enhance edge clarity, ensuring that the focus remains on the clothing item’s structure.
+        </p>
+
+        <h4>Fine-Tuning Methods for Stable Diffusion</h4>
+        <p>
+            Fine-tuning adapts Stable Diffusion to specific datasets or styles, improving its performance for targeted applications like fashion image generation. Several methods are available, each with distinct advantages and trade-offs:
+        </p>
+        <ul>
+            <li><strong>Textual Inversion</strong>: Learns a new pseudo-word (e.g., <code>&lt;my-fashion-style&gt;</code>) in the CLIP text encoder’s embedding space to represent a new concept (e.g., a unique clothing style). It requires only a few images (e.g., 3-5 triplets) and is extremely lightweight, as it only optimizes a single embedding vector (a few KB). This method is ideal for quick experiments and preserves the model’s pre-trained knowledge.</li>
+            <li><strong>LoRA (Low-Rank Adaptation)</strong>: Fine-tunes the model by adding low-rank updates to the weight matrices of specific layers (e.g., attention layers), keeping the original model mostly frozen. LoRA is efficient, requiring less memory and compute than full fine-tuning, but it’s limited to small adjustments and may not capture complex new patterns as effectively.</li>
+            <li><strong>DreamBooth</strong>: Fine-tunes the entire model to associate a unique token with a small set of images (e.g., 3-5 images of a specific style). It enables highly personalized generation but requires more compute and can overfit if not properly regularized. DreamBooth is suitable for creating a model that generates clothing in the style of a specific designer but is more resource-intensive than Textual Inversion or LoRA.</li>
+        </ul>
+
+        <h4>Why Textual Inversion Was Chosen</h4>
+        <p>
+            Textual Inversion was selected as the fine-tuning method for this project due to its simplicity, efficiency, and suitability for the task:
+        </p>
+        <ul>
+            <li><strong>Minimal Resource Requirements</strong>: Textual Inversion only learns a single embedding vector (a few KB), making it ideal for resource-constrained environments like Kaggle, where GPU memory and compute time are limited.</li>
+            <li><strong>Flexibility in Prompting</strong>: The learned token (<code>&lt;my-fashion-style&gt;</code>) can be seamlessly integrated into prompts, allowing for versatile generation (e.g., "A &lt;my-fashion-style&gt; dress with blue color, suitable for winter"). This flexibility is crucial for generating a variety of clothing items with different attributes.</li>
+            <li><strong>Fast Training</strong>: With only 5 triplets and 100 epochs, Textual Inversion completes training quickly (e.g., within a few minutes on a GPU), making it accessible for rapid experimentation and iteration.</li>
+            <li><strong>Preserves Model Integrity</strong>: Unlike full fine-tuning or DreamBooth, Textual Inversion does not modify the model’s weights, reducing the risk of catastrophic forgetting (where the model loses its pre-trained knowledge). This ensures that the model retains its ability to generate diverse images while adapting to the fashion domain.</li>
+            <li><strong>Practicality for Fashion Design</strong>: Textual Inversion’s ability to learn a style token aligns well with fashion design, where capturing a specific aesthetic (e.g., vibrant colors, studio lighting) is often more important than altering the model’s underlying structure.</li>
+        </ul>
+        <p>
+            The process of Textual Inversion in this project involved initializing a new token, optimizing its embedding using the triplets, and integrating it into prompts during inference. The result is a model that can generate fashion images that reflect the learned style while adhering to user-specified attributes and sketches.
+        </p>
+    </section>
+
+    <section id="five">
+        <h2>Challenges and Potential Improvements</h2>
+        <h4>Challenges Faced</h4>
+        <p>
+            Despite the success of the project, several challenges were encountered during development and training:
+        </p>
+        <ul>
+            <li><strong>GPU Memory Constraints</strong>: Stable Diffusion with ControlNet is memory-intensive, requiring careful management of GPU resources. The script includes memory logging and clearing (e.g., <code>torch.cuda.empty_cache()</code>) to mitigate out-of-memory errors, but larger batch sizes or higher resolution images were not feasible on Kaggle’s 16GB GPU.</li>
+            <li><strong>Dataset Quality</strong>: The DeepFashion2 dataset, while rich, contains some inconsistencies in text annotations (e.g., vague descriptions like "clothing item"). The script’s <code>parse_text_file</code> function was enhanced to extract structured attributes, but some prompts still lacked specificity, affecting the quality of generated images.</li>
+            <li><strong>Sketch Preprocessing</strong>: Canny edge sketches sometimes included unwanted features (e.g., human-like outlines), which could mislead the model. The script mitigates this by masking the upper 50% of the sketch and applying gentler edge detection, but this occasionally resulted in loss of fine details in the sketch.</li>
+            <li><strong>Generation Variability</strong>: While Stable Diffusion produces diverse outputs, some generated images still exhibited minor artifacts (e.g., distorted textures) or failed to fully adhere to the sketch. This is a known limitation of diffusion models, where the iterative denoising process can introduce noise if not properly tuned.</li>
+        </ul>
+
+        <h4>Potential Improvements</h4>
+        <p>
+            To address these challenges and further enhance the project, several improvements could be explored:
+        </p>
+        <ul>
+            <li><strong>Higher Resolution Generation</strong>: Using a more powerful GPU (e.g., 24GB VRAM) would allow for generating higher resolution images (e.g., 1024x1024), improving the detail and quality of the generated clothing items for professional use.</li>
+            <li><strong>Enhanced Sketch Preprocessing</strong>: Developing a more sophisticated sketch preprocessing pipeline, such as using semantic segmentation to isolate clothing items before edge detection, could improve the quality of the control signal and reduce artifacts.</li>
+            <li><strong>Advanced Fine-Tuning</strong>: Combining Textual Inversion with LoRA or DreamBooth could enable more expressive fine-tuning, capturing both stylistic and structural nuances of the DeepFashion2 dataset. For example, LoRA could fine-tune the U-Net to better handle fashion-specific textures.</li>
+            <li><strong>Prompt Engineering</strong>: Improving the text prompt parsing logic to handle more complex descriptions (e.g., "a blue denim jacket with long sleeves and gold buttons") would allow for more detailed and accurate generation. This could involve integrating a natural language processing model to extract structured attributes.</li>
+            <li><strong>Evaluation Metrics</strong>: Implementing quantitative evaluation metrics, such as Fréchet Inception Distance (FID) to measure the similarity between generated and real images, or user studies to assess aesthetic quality, would provide a more rigorous assessment of the model’s performance.</li>
+            <li><strong>Interactive Interface</strong>: Developing a web-based interface where users can input custom prompts and upload sketches in real-time would make the tool more accessible to fashion designers, enabling on-the-fly generation and iteration of designs.</li>
+        </ul>
+    </section>
+
+</div>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) { return cell !== '' && cell != null; }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) { headerRowIndex = 0; }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) { console.error(e); return ""; }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Diffusion Model for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        #main p, #main li {
+            text-align: justify;
+        }
+        .architecture-image img {
+            max-width: 800px; /* Increased max-width for larger images */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <a href="index.html" class="button">Back to Portfolio</a>
+            <h1>Diffusion Model for MNIST</h1>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div id="main">
+        <section id="one">
+            <p>In this project, I implemented a Denoising Diffusion Probabilistic Model (DDPM) to generate high-quality images of handwritten digits from the MNIST dataset. Diffusion models are a class of generative models that iteratively denoise random noise to produce samples, offering superior image quality compared to GANs in many cases. This project demonstrates my ability to build complex neural architectures, implement custom noise schedules, and train generative models using PyTorch.</p>
+        </section>
+
+        <section id="two">
+            <p>The Diffusion Model uses a UNet architecture conditioned on timesteps to predict noise at each step of the reverse diffusion process. The key components are:</p>
+            <ul>
+                <li><strong>UNet Architecture</strong>: The UNet is a convolutional neural network with an encoder-decoder structure and skip connections, designed to predict noise in noisy images. Its components include:
+                    <ul>
+                        <li><strong>Downsampling Path (Encoder)</strong>: Four blocks, each with two convolutional layers (3x3, GroupNorm, SiLU activation), reducing spatial dimensions via max-pooling. Channels increase from 64 to 512 across blocks.</li>
+                        <li><strong>Bottleneck</strong>: A block with two convolutional layers processing the lowest-resolution features (1024 channels).</li>
+                        <li><strong>Upsampling Path (Decoder)</strong>: Four blocks, each with upsampling (bilinear interpolation) and two convolutional layers. Skip connections concatenate encoder features, and channels decrease from 512 to 64.</li>
+                        <li><strong>Time Embeddings</strong>: Sinusoidal positional embeddings encode the timestep, processed by an MLP and added to each block’s output to condition the model on the diffusion step.</li>
+                        <li><strong>Output Layer</strong>: A 1x1 convolutional layer maps the final 64-channel feature map to a 1-channel noise prediction.</li>
+                    </ul>
+                </li>
+                <li><strong>Noise Schedule</strong>: A linear beta schedule (β from 0.0001 to 0.02 over 1000 timesteps) controls the forward diffusion process, gradually adding Gaussian noise to images. The reverse process denoises step-by-step using the UNet’s predictions.</li>
+                <li><strong>Exponential Moving Average (EMA)</strong>: An EMA of model weights (decay=0.9999) stabilizes training and improves sample quality.</li>
+            </ul>
+            <div class="architecture-image">
+                <img src="images/fulls/latent-diffusion-arch.png" alt="Diffusion Model Architecture" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Figure 1: Architecture of the Latent Diffusion Model</p>
+            </div>
+            <div class="architecture-image">
+                <img src="images/fulls/unet.jpg" alt="U-Net Model Architecture" style="max-width: 100%; height: auto;">
+                <p class="image-caption">Figure 2: Architecture of the UNet used in the Diffusion Model</p>
+            </div>
+            <p><strong>What Makes Diffusion Models Special</strong>:</p>
+            <ul>
+                <li><strong>High-Quality Generation</strong>: Diffusion models produce sharp, diverse images by iteratively refining noise, often outperforming GANs in image fidelity.</li>
+                <li><strong>Stable Training</strong>: Unlike GANs, diffusion models use a simple MSE loss, avoiding issues like mode collapse or unstable training dynamics.</li>
+                <li><strong>Flexible Sampling</strong>: The iterative denoising process allows control over sample quality by adjusting the number of timesteps.</li>
+            </ul>
+            <p>The Diffusion Model was trained on the MNIST dataset (padded to 32x32 pixels) for 50 epochs with a batch size of 128, using the Adam optimizer (learning rate 2e-5). The model predicts noise added to images at random timesteps, minimizing the MSE loss between predicted and actual noise. An EMA model improves sample quality during inference. The final generated samples (16 images) are saved as a 4x4 grid, demonstrating the model’s ability to produce realistic handwritten digits. This project highlights my expertise in implementing advanced generative models, managing complex training pipelines, and visualizing generative outputs.</p>
+        </section>
+
+        <!-- Implementation Notebook Section -->
+        <section>
+            <h3>Implementation Notebook</h3>
+            <p>
+                <i class="icon brands fa-github"></i>
+                Click below to open the Diffusion Model training notebook on Google Colab.
+            </p>
+            <a 
+                href="https://colab.research.google.com/gist/sgshrigouri/233f84d4809837d50da868dedda2f7fa/diffusionmodels.ipynb" 
+                target="_blank" 
+                class="button"
+                title="View and run theDiffusion Model notebook on Google Colab"
+            >
+                <i class="icon brands fa-github"></i> Open Diffusion Model Notebook
+            </a>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="icons">
+                <li><a href="https://github.com/sgshrigouri" class="icon brands fa-github" target="_blank"><span class="label">Github</span></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- XLSX Parser Script -->
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+    </script>
+</body>
+</html>

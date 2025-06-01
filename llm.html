@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Medical Chatbot with BioGPT - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for Icons (Updated to 6.6.0 for consistency with portfolio) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>Medical Chatbot with BioGPT</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <p>
+            This project implements a medical chatbot designed to assist non-medical users by providing simple, easy-to-understand answers about medical symptoms, causes, or treatments. It leverages BioGPT, a language model fine-tuned for biomedical contexts by Microsoft, with a fallback to GPT-2 if BioGPT fails to load. The chatbot ensures responses are concise, uses bullet points for lists (e.g., "- Pain\n- Nausea"), avoids technical jargon, and includes a disclaimer to consult a doctor.
+        </p>
+    </section>
+    <section id="two">
+        <p>
+            The chatbot is built using the <code>transformers</code> library and runs in the browser via Pyodide, enabling a web-based interface. It processes user input, generates responses, and formats them for clarity. 
+        </p>
+        <div class="architecture-image">
+            <img src="images/fulls/llm_arch.png" alt="Medical Chatbot Overview" style="max-width: 100%; height: auto;">
+            <p class="image-caption">Figure 1: Overview of the Architecture in LLM's</p>
+        </div>
+    </section>
+    <section>
+        <h3>Implementation Notebook</h3>
+        <p>
+            <i class="icon brands fa-github"></i>
+            Click below to open the Medical Chatbot notebook on Google Colab.
+        </p>
+        <a href="https://colab.research.google.com/gist/sgshrigouri/b67ea1d7754d770f07a8346694927867/llms.ipynb" target="_blank" class="button">
+            <i class="icon brands fa-github"></i> Open Medical Chatbot Notebook
+        </a>
+    </section>
+    <section id="three">
+        <h3>Technical Explanations</h3>
+        <h4>Code Breakdown</h4>
+        <p>
+            The Medical Chatbot is implemented as a web application using Pyodide to run Python in the browser. Below is a summary of the code structure:
+        </p>
+        <ul>
+            <li><strong>Model Loading</strong>: The script attempts to load BioGPT using <code>AutoTokenizer</code> and <code>AutoModelForCausalLM</code> from the <code>transformers</code> library. If BioGPT fails, it falls back to GPT-2, a general-purpose language model. The pad token is set to the EOS token to ensure proper tokenization.</li>
+            <li><strong>Device Setup</strong>: In a local environment, the script uses <code>torch.device("cuda" if torch.cuda.is_available() else "cpu")</code> to leverage GPU if available. However, in the browser (via Pyodide), it defaults to CPU since Pyodide doesn’t support GPU.</li>
+            <li><strong>Chatbot Function</strong>: The <code>medical_chatbot</code> function processes user input, tokenizes it, and generates a response using the model. It includes post-processing to format lists into bullet points (e.g., "Symptoms can include: - Pain - Nausea") and filters out responses with technical terms like "viral" or "gastric."</li>
+            <li><strong>Web Integration</strong>: Pyodide runs the Python script in the browser, interacting with the DOM to display messages in a chat interface. The UI includes a chat container, input field, and send button, styled with CSS for a clean user experience.</li>
+            <li><strong>Constraints</strong>: The script ensures responses are concise, avoids speculative content, and adds a disclaimer to consult a doctor, making it safe for non-medical users.</li>
+        </ul>
+        <h4>Large Language Models (LLMs)</h4>
+        <p>
+            Large Language Models are AI models trained on vast amounts of text to understand and generate human-like language. They’re based on the Transformer architecture, which uses attention mechanisms to capture context across long sequences. Key points about LLMs in this project:
+        </p>
+        <ul>
+            <li><strong>BioGPT</strong>: Developed by Microsoft, BioGPT is fine-tuned on biomedical texts, making it ideal for medical question answering. It provides more relevant responses for health-related queries compared to general models.</li>
+            <li><strong>GPT-2</strong>: A general-purpose LLM by OpenAI, used as a fallback. While less specialized, it ensures the chatbot remains functional if BioGPT fails to load.</li>
+            <li><strong>Generation Process</strong>: The model generates responses autoregressively, predicting the next word based on the previous context. Parameters like <code>temperature=0.5</code> and <code>top_p=0.9</code> balance coherence and diversity in responses.</li>
+            <li><strong>Limitations</strong>: LLMs can generate incorrect or biased information if not constrained. This project mitigates this by filtering technical terms and ensuring concise, user-friendly responses.</li>
+        </ul>
+        <h4>Retrieval-Augmented Generation (RAG)</h4>
+        <p>
+            Retrieval-Augmented Generation combines a retrieval system with a generative model to improve response accuracy. While this project doesn’t use RAG, understanding it provides insight into potential improvements:
+        </p>
+        <ul>
+            <li><strong>How RAG Works</strong>: RAG retrieves relevant documents from a knowledge base (e.g., medical texts) using a retriever (like Dense Passage Retrieval), then feeds them into an LLM to generate a response grounded in factual data.</li>
+            <li><strong>Benefits</strong>: RAG reduces hallucination (making up information) by providing verified context, which is critical for medical applications where accuracy is paramount.</li>
+            <li><strong>Potential for This Project</strong>: Integrating RAG could enhance the chatbot by retrieving verified medical information before generating responses, ensuring higher accuracy and reliability.</li>
+            <li><strong>Challenges</strong>: RAG requires a curated knowledge base and a retrieval system, adding complexity. The current project opts for a simpler approach by constraining the LLM’s output and adding disclaimers.</li>
+        </ul>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <ul class="icons">
+            <li><a href="https://github.com/sgshrigouri" class="icon brands fa-github" target="_blank"><span class="label">Github</span></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) { return cell !== '' && cell != null; }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) { headerRowIndex = 0; }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) { console.error(e); return ""; }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>

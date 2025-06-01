@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
     <title>Conditional GAN for MNIST - My GenAI Portfolio</title>
@@ -46,6 +7,27 @@
     <link rel="stylesheet" href="assets/css/main.css" />
     <!-- Font Awesome for GitHub icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        .epoch-grid .architecture-image {
+            margin-bottom: 1.5em;
+            text-align: center;
+        }
+        .epoch-grid img {
+            width: 100%;
+            max-width: 600px; /* Increase max-width for larger images */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .epoch-grid .image-caption {
+            font-size: 0.9em;
+            margin-top: 0.5em;
+            text-align: center;
+        }
+        #main p, #main li {
+            text-align: justify;
+        }
+    </style>
 </head>
 <body>
 
@@ -121,7 +103,61 @@
             <li><strong>Convolutional Architecture</strong>: Unlike the standard GAN’s fully connected layers, the Conditional GAN uses transposed convolutional layers in the Generator and convolutional layers in the Discriminator, improving spatial feature learning for higher-quality images.</li>
             <li><strong>Training Stability</strong>: Batch normalization and carefully tuned learning rates (1e-4 for both networks) mitigate issues like mode collapse, ensuring stable training over 65 epochs.</li>
         </ul>
-        <p>The model was trained on the MNIST dataset with a batch size of 64, using Adam optimizers for both the Generator and Discriminator (learning rate 1e-4). The training loop alternates between updating the Discriminator with losses from real MNIST images (labeled as 1) and fake images from the Generator (labeled as 0), both conditioned on class labels, and updating the Generator to maximize the Discriminator’s error on fake images, conditioned on class labels, aiming to produce realistic digits. Generated images are saved as 10-column grids for each epoch, with labels cycling through 0–9 to visualize the progression of digit quality. This project demonstrates my proficiency in conditional generative modeling, convolutional neural network design, and PyTorch implementation for controlled image synthesis.</p>
+        <p>The model was trained on the MNIST dataset with a batch size of 64, using Adam optimizers for both the Generator and Discriminator (learning rate 1e-4). The training loop alternates between updating the Discriminator with losses from real MNIST images (labeled as 1) and fake images from the Generator (labeled as 0), both conditioned on class labels, and updating the Generator to maximize the Discriminator’s error on fake images, conditioned on class labels, aiming to produce realistic digits. Generated images are saved as 10-column grids for each epoch, with labels cycling through 0–9 to visualize the progression of digit quality. Below are sample outputs from eight selected epochs, showcasing the improvement in generated image quality over time.</p>
+
+        <!-- Epoch Images Section -->
+        <h3>Generated Images Across Epochs</h3>
+        <p>The following images display 10-column grids of generated digits (0–9) from the Conditional GAN at different epochs, illustrating the model’s learning progress.</p>
+        <div class="row epoch-grid">
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_000 (1)_conGAN.jpg" alt="CGAN Epoch 1" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 1</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_010 (2)_conGAN.jpg" alt="CGAN Epoch 2" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 2</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_020 (2)_conGAN.jpg" alt="CGAN Epoch 3" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 3</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_030 (2)_conGAN.jpg" alt="CGAN Epoch 4" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 4</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_040 (2)_conGAN.jpg" alt="CGAN Epoch 5" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 5</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_050 (2)_conGAN.jpg" alt="CGAN Epoch 6" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 6</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_060 (2)_conGAN.jpg" alt="CGAN Epoch 7" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 7</p>
+                </div>
+            </div>
+            <div class="col-6 col-12-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_063_conGAN.jpg" alt="CGAN Epoch 8" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 8</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Implementation Notebook Section -->
@@ -146,7 +182,7 @@
 <footer id="footer">
     <div class="inner">
         <ul class="icons">
-            <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+            <li><a href="https://github.com/sgshrigouri" class="icon brands fa-github" target="_blank"><span class="label">Github</span></a></li>
         </ul>
     </div>
 </footer>

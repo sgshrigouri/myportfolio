@@ -1,0 +1,239 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>PixelCNN for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        .epoch-grid .architecture-image {
+            margin-bottom: 1.5em;
+            text-align: center;
+        }
+        .epoch-grid img {
+            width: 100%;
+            max-width: 400px; /* Adjusted for 4x4 sample grids */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .epoch-grid .image-caption {
+            font-size: 0.9em;
+            margin-top: 0.5em;
+            text-align: center;
+        }
+        #main p, #main li {
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>PixelCNN for MNIST</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <p>In this project, I implemented a PixelCNN to generate handwritten digits from the MNIST dataset. PixelCNN is an autoregressive generative model that predicts pixel values sequentially, using masked convolutions to ensure causality. This project demonstrates my ability to build and train complex generative models with PyTorch Lightning, achieving high-quality synthetic MNIST digits.</p>
+    </section>
+
+    <section id="two">
+        <p>The PixelCNN architecture consists of a stack of masked convolutional layers designed to model the conditional distribution of pixels:</p>
+        <ul>
+            <li><strong>Masked Convolution (Type A)</strong>: The first layer uses a type-A mask to exclude the current pixel.
+                <ul>
+                    <li><strong>Input</strong>: A 28x28x1 grayscale MNIST image.</li>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>7x7 convolution with 64 output channels, padding 3, no bias.</li>
+                            <li>Type-A mask zeros out weights for the current pixel (center) and future pixels (right and below).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: Feature maps of shape (batch_size, 64, 28, 28).</li>
+                </ul>
+            </li>
+            <li><strong>Intermediate Layers (Type B)</strong>: 10 layers with type-B masks to include the current pixel.
+                <ul>
+                    <li><strong>Architecture</strong>: Each layer includes:
+                        <ul>
+                            <li>Batch normalization.</li>
+                            <li>ReLU activation.</li>
+                            <li>3x3 masked convolution (type B) with 64 channels, padding 1, no bias.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: Feature maps of shape (batch_size, 64, 28, 28).</li>
+                </ul>
+            </li>
+            <li><strong>Output Layer</strong>: Produces logits for pixel values.
+                <ul>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>Batch normalization.</li>
+                            <li>ReLU activation.</li>
+                            <li>1x1 convolution from 64 channels to 256 channels (for 256 possible pixel values).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: Logits of shape (batch_size, 256, 28, 28), representing probabilities for each pixel’s intensity (0–255).</li>
+                </ul>
+            </li>
+        </ul>
+        <div class="architecture-image">
+            <img src="images/fulls/pixel_cnn.png" alt="PixelCNN Architecture" style="max-width: 100%; height: auto;">
+            <p class="image-caption">Figure 1: Architecture of the PixelCNN (Masked Convolutions, Intermediate Layers, Output Layer)</p>
+        </div>
+        <p><strong>What Makes PixelCNN Special</strong>:</p>
+        <ul>
+            <li><strong>Autoregressive Modeling</strong>: PixelCNN generates images pixel by pixel, modeling the joint distribution as a product of conditional distributions.</li>
+            <li><strong>Masked Convolutions</strong>: Type-A and type-B masks ensure causality, preventing the model from accessing future pixels during prediction.</li>
+            <li><strong>High-Quality Generation</strong>: Despite slower sampling, PixelCNN produces sharp, coherent images by explicitly modeling pixel dependencies.</li>
+            <li><strong>Training Stability</strong>: Batch normalization and PyTorch Lightning’s framework stabilize training over long epochs.</li>
+        </ul>
+        <p>The model was trained on the MNIST dataset for 100 epochs with a batch size of 64, using the Adam optimizer (learning rate 0.001) and cross-entropy loss. The training loop processes MNIST images, and a custom callback generates 4x4 grids of samples every 10 epochs. The sampling process predicts each pixel sequentially, using multinomial sampling from softmax probabilities. Below are eleven 4x4 grids of generated digits, showing the model’s progress at epochs 10 through 100 and the final samples, illustrating the improvement in image quality over time.</p>
+
+        <!-- Epoch Images Section -->
+        <h3>Generated Samples Across Epochs</h3>
+        <p>The following images display 4x4 grids of generated MNIST digits at different epochs, showcasing the PixelCNN’s learning progress.</p>
+        <div class="row epoch-grid">
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_10_pn.png" alt="PixelCNN Epoch 10" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 10</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_20_pn.png" alt="PixelCNN Epoch 20" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 20</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_30_pn.png" alt="PixelCNN Epoch 30" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 30</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_40_pn.png" alt="PixelCNN Epoch 40" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 40</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_50_pn.png" alt="PixelCNN Epoch 50" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 50</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_60_pn.png" alt="PixelCNN Epoch 60" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 60</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_70_pn.png" alt="PixelCNN Epoch 70" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 70</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_80_pn.png" alt="PixelCNN Epoch 80" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 80</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_90_pn.png" alt="PixelCNN Epoch 90" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 90</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_epoch_100_pn.png" alt="PixelCNN Epoch 100" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Epoch 100</p>
+                </div>
+            </div>
+            <div class="col-3 col-6-medium col-12-xsmall">
+                <div class="architecture-image">
+                    <img src="images/fulls/generated_samples_final.png" alt="PixelCNN Final Samples" style="max-width: 100%; height: auto;">
+                    <p class="image-caption">Final Samples</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Notebook Section -->
+    <section>
+        <h3>Implementation Notebook</h3>
+        <p>
+            <i class="icon brands fa-github"></i>
+            Click below to open the PixelCNN training notebook on Google Colab.
+        </p>
+        <a 
+            href="https://colab.research.google.com/gist/sgshrigouri/0b48c65147a0c7691080bc1ef43d535e/pixelcnn.ipynb" 
+            target="_blank" 
+            class="button"
+            title="View and run the PixelCNN notebook on Google Colab"
+        >
+            <i class="icon brands fa-github"></i> Open PixelCNN Notebook
+        </a>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <ul class="icons">
+            <li><a href="https://github.com/sgshrigouri" class="icon brands fa-github" target="_blank"><span class="label">Github</span></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+
+<!-- XLSX Parser Script -->
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>

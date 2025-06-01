@@ -1,9 +1,3 @@
-/*
-    Strata by HTML5 UP
-    html5up.net | @ajlkn
-    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
-
 (function($) {
 
     var $window = $(window),
@@ -12,20 +6,17 @@
         $footer = $('#footer'),
         $main = $('#main'),
         settings = {
-            // Parallax background effect?
             parallax: true,
-
-            // Parallax factor (lower = more intense, higher = less intense).
             parallaxFactor: 20
         };
 
     // Breakpoints.
     breakpoints({
-        xlarge:  [ '1281px',  '1800px' ],
-        large:   [ '981px',   '1280px' ],
-        medium:  [ '737px',   '980px'  ],
-        small:   [ '481px',   '736px'  ],
-        xsmall:  [ null,      '480px'  ],
+        xlarge:  ['1281px',  '1800px'],
+        large:   ['981px',   '1280px'],
+        medium:  ['737px',   '980px'],
+        small:   ['481px',   '736px'],
+        xsmall:  [null,      '480px']
     });
 
     // Play initial animations on page load.
@@ -37,10 +28,7 @@
 
     // Touch?
     if (browser.mobile) {
-        // Turn on touch mode.
         $body.addClass('is-touch');
-
-        // Height fix (mostly for iOS).
         window.setTimeout(function() {
             $window.scrollTop($window.scrollTop() + 1);
         }, 0);
@@ -55,9 +43,7 @@
         $footer.appendTo($header);
     });
 
-    // Header.
-    // Parallax background.
-    // Disable parallax on IE (smooth scrolling is jerky), and on mobile platforms (= better performance).
+    // Header Parallax.
     if (browser.name === 'ie' || browser.mobile) {
         settings.parallax = false;
     }
@@ -82,31 +68,48 @@
 
     // Main Sections: Two.
     // Lightbox gallery.
-    $(window).on('load', function() {
+    $window.on('load', function() {
+        // Map image hrefs to project URLs
+        var projectMap = {
+            'images/fulls/gan.png': 'gan-for-mnist.html',
+            'images/fulls/autoencoder.png': 'autoencoder-for-fashionmnist.html',
+            'images/fulls/vae.jpg': 'vae-for-mnist.html',
+            'images/fulls/Conditional-GAN-CGAN-architecture.png': 'conditional-gan-for-mnist.html',
+            'images/fulls/cycleGAN.png': 'cycle-gan-for-mnist.html',
+            'images/fulls/diff.jpg': 'diffusion-for-mnist.html',
+            'images/fulls/vit_architecture.png': 'vision-transformer-for-mnist.html',
+            'images/fulls/pixelcnn_architecture.png': 'pixelcnn-for-mnist.html',
+            'images/fulls/llm.jpg': 'llm.html',
+            'images/fulls/controlnet.jpg': 'controlnet-for-fashion.html'
+        };
+
         $('#two').poptrox({
             caption: function($a) { return $a.next('h3').text(); },
             overlayColor: '#2c2c2c',
             overlayOpacity: 0.85,
-            popupCloserText: '',
-            popupLoaderText: '',
+            popupCloserText: '×',
+            popupLoaderText: '••••',
             selector: '.work-item a.image',
             usePopupCaption: true,
             usePopupDefaultStyling: false,
             usePopupEasyClose: false,
             usePopupNav: true,
+            usePopupLoader: true,
+            preload: true,
             windowMargin: (breakpoints.active('<=small') ? 0 : 50),
             onPopupOpen: function() {
-                // Log the href to debug
-                console.log('Poptrox onPopupOpen - href:', this.element.attr('href'));
-                // Use absolute path for GitHub Pages
-                var href = this.element.attr('href');
-                if (href && !href.startsWith('/myportfolio/')) {
-                    href = '/myportfolio/' + href;
+                var imageHref = this.element.attr('href');
+                console.log('Poptrox onPopupOpen - href:', imageHref);
+                if (!projectMap[imageHref]) {
+                    console.warn('No project mapping for image:', imageHref);
                 }
-                // Append button with custom class
+                var projectHref = projectMap[imageHref] || '#';
                 $('.poptrox-popup').append(
-                    '<a href="' + href + '" class="button go-to-project">Go to Project</a>'
+                    '<a href="' + projectHref + '" class="button go-to-project">Go to Project</a>'
                 );
+            },
+            onPopupClose: function() {
+                $('.poptrox-popup .go-to-project').remove();
             }
         });
     });

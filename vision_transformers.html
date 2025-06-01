@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Vision Transformer (ViT) for MNIST - My GenAI Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <!-- Font Awesome for GitHub icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        #main p, #main li {
+            text-align: justify;
+        }
+        .architecture-image img {
+            width: 100%; /* Ensure image scales to container width */
+            max-width: 100vw; /* Allow image to span full viewport width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header id="header">
+    <div class="inner">
+        <a href="index.html" class="button">Back to Portfolio</a>
+        <h1>Vision Transformer (ViT) for MNIST</h1>
+    </div>
+</header>
+
+<!-- Main -->
+<div id="main">
+    <section id="one">
+        <p>In this project, I implemented a Vision Transformer (ViT) to classify handwritten digits from the MNIST dataset. Unlike traditional convolutional neural networks, ViTs use a transformer architecture, originally designed for natural language processing, to process image patches as sequences. This project showcases my ability to adapt transformer models for computer vision tasks, leveraging PyTorch to achieve high classification accuracy on MNIST.</p>
+    </section>
+
+    <section id="two">
+        <p>The Vision Transformer architecture consists of three main components:</p>
+        <ul>
+            <li><strong>Patch Embedding</strong>: Converts the input image into a sequence of patch embeddings.
+                <ul>
+                    <li><strong>Input</strong>: A 28x28x1 grayscale MNIST image.</li>
+                    <li><strong>Process</strong>:
+                        <ul>
+                            <li>Divides the image into 4x4 patches (49 patches total, as 28/4 = 7).</li>
+                            <li>Applies a 2D convolutional layer (kernel size 4, stride 4) to project each patch into a 256-dimensional embedding.</li>
+                            <li>Flattens the patches into a sequence (shape: batch_size, 49, 256).</li>
+                            <li>Prepends a learnable classification token (CLS token) to the sequence.</li>
+                            <li>Adds learnable positional embeddings to encode patch positions.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: A sequence of 50 tokens (CLS + 49 patches), each 256-dimensional (shape: batch_size, 50, 256).</li>
+                </ul>
+            </li>
+            <li><strong>Transformer Encoder</strong>: Processes the patch sequence using transformer blocks.
+                <ul>
+                    <li><strong>Architecture</strong>: 6 transformer encoder blocks, each containing:
+                        <ul>
+                            <li><strong>Multi-Head Self-Attention</strong>: 8 attention heads, computing attention scores across the 50-token sequence. Each head processes 32-dimensional queries, keys, and values (256/8).</li>
+                            <li><strong>Feed-Forward Network (MLP)</strong>: Expands to 1024 dimensions (256 * 4), applies GELU activation, and projects back to 256 dimensions.</li>
+                            <li><strong>Layer Normalization</strong>: Applied before attention and MLP.</li>
+                            <li><strong>Residual Connections</strong>: Added around attention and MLP.</li>
+                            <li><strong>Dropout</strong>: 0.1 dropout rate for regularization.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: A transformed sequence of 50 tokens, each 256-dimensional.</li>
+                </ul>
+            </li>
+            <li><strong>Classification Head</strong>: Produces the final class probabilities.
+                <ul>
+                    <li><strong>Input</strong>: The CLS token’s embedding from the transformer output (batch_size, 256).</li>
+                    <li><strong>Architecture</strong>:
+                        <ul>
+                            <li>Layer normalization.</li>
+                            <li>A linear layer mapping 256 dimensions to 10 classes (MNIST digits 0–9).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Output</strong>: Logits for 10 classes (batch_size, 10).</li>
+                </ul>
+            </li>
+        </ul>
+        <div class="architecture-image">
+            <img src="images/fulls/vit_arch.jpg" alt="Vision Transformer Architecture" style="max-width: 100%; height: auto;">
+            <p class="image-caption">Figure 1: Architecture of the Vision Transformer (Patch Embedding, Transformer Encoder, Classification Head)</p>
+        </div>
+        <p><strong>What Makes Vision Transformers Special</strong>:</p>
+        <ul>
+            <li><strong>Patch-Based Processing</strong>: ViTs treat images as sequences of patches, enabling global context modeling via self-attention, unlike CNNs’ local receptive fields.</li>
+            <li><strong>Self-Attention Mechanism</strong>: The multi-head attention allows the model to focus on relevant patches across the image, capturing long-range dependencies.</li>
+            <li><strong>Scalability</strong>: Transformers scale well with data and model size, achieving state-of-the-art performance on large datasets (though this project uses MNIST for simplicity).</li>
+            <li><strong>Flexibility</strong>: The architecture is adaptable to various vision tasks beyond classification, such as object detection and segmentation.</li>
+        </ul>
+        <p>The model was trained on the MNIST dataset for 5 epochs with a batch size of 64, using the Adam optimizer (learning rate 0.001) and cross-entropy loss. The training loop processes batches of normalized MNIST images (mean 0.1307, std 0.3081), and the test loop evaluates accuracy on the test set. The model achieves high accuracy, demonstrating the effectiveness of transformers for image classification.</p>
+    </section>
+
+    <!-- Implementation Notebook Section -->
+    <section>
+        <h3>Implementation Notebook</h3>
+        <p>
+            <i class="icon brands fa-github"></i>
+            Click below to open the Vision Transformer training notebook on Google Colab.
+        </p>
+        <a 
+            href="https://colab.research.google.com/gist/sgshrigouri/129322d74d569c78487337119013d286/vision_transformers.ipynb" 
+            target="_blank" 
+            class="button"
+            title="View and run the Vision Transformer notebook on Google Colab"
+        >
+            <i class="icon brands fa-github"></i> Open Vision Transformer Notebook
+        </a>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="inner">
+        <ul class="icons">
+            <li><a href="https://github.com/sgshrigouri" class="icon brands fa-github" target="_blank"><span class="label">Github</span></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+
+<!-- XLSX Parser Script -->
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+</body>
+</html>
